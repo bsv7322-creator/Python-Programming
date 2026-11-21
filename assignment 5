@@ -17,7 +17,7 @@ def label(text):
     s = score(text)
     return "positive" if s > 0 else "negative" if s < 0 else "neutral"
 
-# 1. Expected Output Check & B4.1 (50 complaints agreement)
+# 1. Expected Output & B4.1 (50 complaints agreement)
 data = [("Roads are clean and the bus was fast.", "positive"), ("Smoke from the factory, air is bad.", "negative"),
         ("The staff were not helpful.", "negative"), ("Not bad, service improved.", "positive"), ("Bus arrived.", "neutral")] * 10
 print("Agreement:", sum(label(t) == y for t, y in data), "/ 50")
