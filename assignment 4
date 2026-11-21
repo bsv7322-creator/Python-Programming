@@ -1,1 +1,32 @@
+from collections import defaultdict
+files = ["cse.txt", "ece.txt", "mech.txt", "civil.txt", "eee.txt"]
+seen, master, events, errors = set(), [], defaultdict(list), []
+for fname in files:
+    try:
+        with open(fname) as f:
+            for line in f:
+                parts = [x.strip() for x in line.split(";")]
+                if len(parts) != 5 or not all(parts):
+                    errors.append(f"{fname}: Damaged line")
+                    continue
+
+                reg, name, dept, email, evs = parts
+
+                if email.count("@") != 1 or "." not in email.split("@").pop() or " " in email:
+                    errors.append(f"{fname}: Bad email ({email})")
+                elif reg in seen:
+                    errors.append(f"{fname}: Duplicate ({reg})")
+                else:
+                    seen.add(reg)
+                    master.append(line.strip())
+                    for ev in evs.split(","):
+                        events[ev.strip()].append(f"{reg} - {name}")
+    except FileNotFoundError:
+        errors.append(f"{fname}: File missing")
+
+with open("master_list.txt", "w") as f: f.write("\n".join(master))
+with open("error_log.txt", "w") as f: f.write("\n".join(errors))
+with open("summary_report.txt", "w") as f: f.write(f"Valid: {len(master)}, Errors: {len(errors)}")
+for ev, names in events.items():
+    with open(f"event_{ev}.txt", "w") as f: f.write("\n".join(names))
 
