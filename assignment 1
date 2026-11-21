@@ -1,1 +1,87 @@
+Python Program
 
+from decimal import Decimal
+
+ 
+
+STANDARD_FAT = Decimal("3.50")
+
+STANDARD_SNF = Decimal("8.50")
+
+SNF_STEP_VALUE = Decimal("0.30")
+
+ 
+
+RATE_CARDS = {
+
+    "regular": {"base": Decimal("30.00"),
+
+                "fat_step": Decimal("0.40")},
+
+    "april_june": {"base": Decimal("32.00"),
+
+                   "fat_step": Decimal("0.45")}
+
+}
+
+ 
+
+def steps(value, standard):
+
+    """Convert a two-decimal reading into 0.1% steps."""
+
+    return int(((value - standard) * 10).to_integral_value())
+
+ 
+
+def revised_rate(fat, snf, season):
+
+    """Return the rate for the selected season."""
+
+    card = RATE_CARDS[season]
+
+    fs = steps(fat, STANDARD_FAT)
+
+    ss = steps(snf, STANDARD_SNF)
+
+    return (card["base"] + fs * card["fat_step"]
+
+            + ss * SNF_STEP_VALUE).quantize(Decimal("0.01"))
+
+ 
+
+def revised_payment(litres, fat, snf, season):
+
+    """Return payment for one entry."""
+
+    rate = revised_rate(fat, snf, season)
+
+    return (litres * rate).quantize(Decimal("0.01"))
+
+ 
+
+def ten_day_bonus(total_litres):
+
+    """Give Rs. 0.50 per litre only above 500 litres."""
+
+    if total_litres > Decimal("500"):
+
+        return (total_litres * Decimal("0.50")).quantize(Decimal("0.01"))
+
+    return Decimal("0.00")
+
+ 
+
+fat, snf = Decimal("4.20"), Decimal("8.70")
+
+print(revised_rate(fat, snf, "regular"))
+
+print(revised_rate(fat, snf, "april_june"))
+
+print(revised_payment(Decimal("10"), Decimal("3.50"),
+
+                      Decimal("8.50"), "april_june"))
+
+print(ten_day_bonus(Decimal("500")))
+
+print(ten_day_bonus(Decimal("501")))
