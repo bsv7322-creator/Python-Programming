@@ -1,1 +1,17 @@
-
+import time
+def ways_naive(n):
+    if n <= 1:
+        return 1
+    return ways_naive(n-1) + ways_naive(n-2)
+def ways_loop(n):
+    a, b = 1, 1
+    for i in range(2, n+1):
+        a, b = b, a+b
+    return b
+start = time.perf_counter()
+print("Original:", ways_naive(25))
+print("Time:", time.perf_counter()-start)
+start = time.perf_counter()
+print("Redesigned:", ways_loop(25))
+print("Time:", time.perf_counter()-start)
+print("1000 steps:", ways_loop(1000))
