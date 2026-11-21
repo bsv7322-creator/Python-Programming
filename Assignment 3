@@ -1,1 +1,47 @@
+import time
+def fix_phone(phone):
+    nums = ""
+    for ch in str(phone or ""):
+        if ch.isdigit():
+            nums = nums + ch
+    return nums[-10:]
+def fix_name(name):
+    if not name or name.strip() == "":
+        return "Unknown"
+    name = name.lower().replace("dr.", "").replace("mr.", "")
+    return name.strip().title()
+def merge_contacts(all_lists):
+    merged = {}
+    for contact_list in all_lists:
+        for p in contact_list:
+            phone = fix_phone(p.get("phone"))
+            if phone == "":
+                continue
+            
+           name = fix_name(p.get("name"))
+            if phone not in merged:
+                merged[phone] = {"name": name, "phones": set(), "emails": set()}
+            elif len(name) > len(merged[phone]["name"]) and name != "Unknown":
+                merged[phone]["name"] = name
 
+            merged[phone]["phones"].add(phone)
+            if p.get("email"):
+                merged[phone]["emails"].add(p["email"].strip().lower())
+    return list(merged.values())
+# 1. Sample Test
+p1 = [{"name": "Dr. Ravi", "phone": "+91 98400 12345", "email": "ravi@work.com"}]
+p2 = [{"name": "ravi kumar", "phone": "9840012345", "email": "ravi@gmail.com"}]
+sim = [{"name": "", "phone": "09840012345", "email": None}]
+
+for person in merge_contacts([p1, p2, sim]):
+    print(person)
+# 2. Time Measurement (1,000 & 100,000)
+def test_speed(total):
+    data = []
+    for i in range(total):
+        data.append({"name": "User", "phone": "98400" + str(10000 + i % 500), "email": "u@mail.com"})
+    start = time.time()
+    merge_contacts([data])
+    print("Contacts:", total, "-> Time:", round((time.time() - start) * 1000, 2), "ms")
+test_speed(1000)
+test_speed(100000)
